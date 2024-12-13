@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+option csharp_namespace = "SccsTrivia";
+option java_multiple_files = true;
+option java_package = "edu.augusta.sccs.trivia";
+option java_outer_classname = "TriviaAppProto";
+option objc_class_prefix = "HLW";
+
+package trivia;
+
+// The question service definition.
+service TriviaQuestions {
+  // Provides questions
+  rpc GetQuestions (QuestionsRequest) returns (QuestionsReply) {}
+  rpc SubmitAnswer (AnswerSubmission) returns (AnswerResponse) {}
+  rpc GetPlayer (PlayerRequest) returns (PlayerReply) {}
+  rpc RegisterPlayer(PlayerRegistrationRequest) returns (PlayerReply);
+}
+
+// The request message containing the user's name.
+message QuestionsRequest {
+  int32 numberOfQuestions = 1; // the number of questions to return
+  int32 difficulty = 2; // the difficulty level of the questions
+}
+
+// The reply message containing the number of questions and difficulty requested
+message QuestionsReply {
+  repeated Question questions = 1; // the set of questions
+}
+
+// a players answer
+message AnswerSubmission {
+  string player_id = 1; // universal unique identifier for the player
+  repeated QuestionAnswer answers = 2;
+}
+
+// Provides offline answers
+message QuestionAnswer {
+  string questionUuid = 1;
+  string answer = 2;
+  int64 timestampMillis = 3;
+}
+
+message AnswerResponse {
+  bool success = 1; //
+  string error_message = 2; //
+}
+
+// The request message containing the user uuid
+message PlayerRequest {
+  string uuid = 1;
+}
+
+// The reply message containing the player
+message PlayerReply {
+  Player player = 1;
+}
+
+// Player Registration Request
+message PlayerRegistrationRequest {
+  Player player = 1; // Player details for registration
+}
+
+
+// a trivia question
+message Question {
+  string uuid = 1; // universal unique identifier for the question
+  int32 difficulty = 2; // the difficulty level of the question
+  string question = 3; // the text of the question to supply to user
+  string answer = 4; // the correct answer to the question
+  AnswerType answerType = 5; // the type of answer is needed to parse answer
+  repeated string choices = 6; // multiple choice options
+}
+
+// a trivia player
+message Player {
+  string uuid =1; // universal unique identifier for the question
+  string username = 2; // the username of the player
+  int32 lastDifficulty = 3; // the difficulty of the last question
+}
+
+// The type of answer required for a question
+enum AnswerType {
+  MULTIPLE_CHOICE = 0;
+  TRUE_FALSE = 1;
+  SINGLE_WORD_ANSWER = 2;
+}
